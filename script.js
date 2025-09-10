@@ -790,6 +790,7 @@ async function sendNotificationsViaEdgeFunction(applicationData) {
                     'template_pxi385c',
                     {
                         to_email: email,
+                        apartment_name: 'Speed 아파트',
                         application_number: emailAppNum,
                         name: applicationData.name,
                         phone: applicationData.phone,
