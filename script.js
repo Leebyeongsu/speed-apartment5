@@ -642,6 +642,18 @@ async function sendEmailToAdmins(applicationData) {
 
             } catch (error) {
                 console.error(`❌ ${adminEmail}로 이메일 발송 실패:`, error);
+                console.error('📋 실패한 이메일 파라미터:', templateParams);
+                console.error('🔍 오류 상세정보:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name,
+                    cause: error.cause
+                });
+                
+                // 모바일 디버그 환경에서 오류 표시
+                if (typeof window.logError === 'function') {
+                    window.logError(new Error(`EmailJS 발송 실패 (${adminEmail}): ${error.message}`));
+                }
             }
 
             // 다음 이메일 발송 전 잠시 대기 (스팸 방지)
@@ -809,6 +821,28 @@ async function sendNotificationsViaEdgeFunction(applicationData) {
                 }
                 return { email, success: true, result };
             } catch (error) {
+                console.error(`❌ ${email}로 EmailJS 개별 발송 실패:`, error);
+                console.error('📋 실패한 이메일 파라미터:', {
+                    to_email: email,
+                    apartment_name: 'Speed 아파트',
+                    application_number: emailAppNum,
+                    name: applicationData.name,
+                    phone: applicationData.phone,
+                    work_type_display: resolvedWorkTypeDisplay,
+                    start_date: applicationData.startDate || '미지정',
+                    description: applicationData.description || '없음'
+                });
+                console.error('🔍 오류 상세정보:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
+                
+                // 모바일 디버그 환경에서 오류 표시
+                if (typeof window.logError === 'function') {
+                    window.logError(new Error(`EmailJS 개별 발송 실패 (${email}): ${error.message}`));
+                }
+                
                 if (typeof logEmailAttempt === 'function') {
                     try { await logEmailAttempt(applicationData.id, 'emailjs', 'failed', error.message); } catch(e){ console.warn('logEmailAttempt 실패(무시):', e); }
                 }
@@ -1315,7 +1349,11 @@ function generatePageQR() {
     
     // 고객용 URL 생성 (간단하게)
     const currentUrl = window.location.origin + window.location.pathname;
-    const customerUrl = `${currentUrl}?mode=customer`;
+    // 현재 debug 모드인지 확인
+    const isDebugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
+    const customerUrl = isDebugMode ? 
+        `${currentUrl}?debug=true&mode=customer` : 
+        `${currentUrl}?mode=customer`;
     
     console.log('QR 코드용 단순화된 URL:', customerUrl);
     console.log('URL 길이:', customerUrl.length, '자');
@@ -1324,7 +1362,9 @@ function generatePageQR() {
     if (customerUrl.length > 800) {
         console.warn('URL이 너무 깁니다. 더 단축합니다.');
         // 짧은 URL 사용
-        const shortUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?mode=customer`;
+        const shortUrl = isDebugMode ? 
+            `${window.location.protocol}//${window.location.host}${window.location.pathname}?debug=true&mode=customer` :
+            `${window.location.protocol}//${window.location.host}${window.location.pathname}?mode=customer`;
         console.log('더 단축된 URL:', shortUrl, '길이:', shortUrl.length);
         return generateQRWithShortUrl(shortUrl, qrCodeDiv, qrSection, qrDeleteBtn);
     }
@@ -1399,7 +1439,10 @@ function generateQRWithShortUrl(shortUrl, qrCodeDiv, qrSection, qrDeleteBtn) {
         console.error('짧은 URL QR 코드 생성 중 오류:', error);
         
         // 최후의 수단: 더 간단한 URL
-        const simpleUrl = `${window.location.protocol}//${window.location.hostname}?mode=customer`;
+        const isDebugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
+        const simpleUrl = isDebugMode ? 
+            `${window.location.protocol}//${window.location.hostname}?debug=true&mode=customer` :
+            `${window.location.protocol}//${window.location.hostname}?mode=customer`;
         console.log('최종 단순 URL 시도:', simpleUrl);
         
         try {
@@ -1785,7 +1828,10 @@ window.shareToKakao = function() {
     if (typeof Kakao !== 'undefined' && Kakao.Share) {
         const title = localStorage.getItem('mainTitle') || 'Speed 아파트 통신 환경 개선 신청서';
         const subtitle = localStorage.getItem('mainSubtitle') || '통신 환경 개선을 위한 신청서를 작성해주세요';
-        const customerUrl = `${window.location.origin}${window.location.pathname}?mode=customer`;
+        const isDebugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
+        const customerUrl = isDebugMode ? 
+            `${window.location.origin}${window.location.pathname}?debug=true&mode=customer` :
+            `${window.location.origin}${window.location.pathname}?mode=customer`;
         
         Kakao.Share.sendDefault({
             objectType: 'feed',
