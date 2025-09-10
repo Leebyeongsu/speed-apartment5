@@ -1315,7 +1315,7 @@ function generatePageQR() {
     
     // 고객용 URL 생성 (간단하게)
     const currentUrl = window.location.origin + window.location.pathname;
-    const customerUrl = `${currentUrl}?customer=true`;
+    const customerUrl = `${currentUrl}?mode=customer`;
     
     console.log('QR 코드용 단순화된 URL:', customerUrl);
     console.log('URL 길이:', customerUrl.length, '자');
@@ -1324,7 +1324,7 @@ function generatePageQR() {
     if (customerUrl.length > 800) {
         console.warn('URL이 너무 깁니다. 더 단축합니다.');
         // 짧은 URL 사용
-        const shortUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?customer=true`;
+        const shortUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?mode=customer`;
         console.log('더 단축된 URL:', shortUrl, '길이:', shortUrl.length);
         return generateQRWithShortUrl(shortUrl, qrCodeDiv, qrSection, qrDeleteBtn);
     }
@@ -1399,7 +1399,7 @@ function generateQRWithShortUrl(shortUrl, qrCodeDiv, qrSection, qrDeleteBtn) {
         console.error('짧은 URL QR 코드 생성 중 오류:', error);
         
         // 최후의 수단: 더 간단한 URL
-        const simpleUrl = `${window.location.protocol}//${window.location.hostname}?customer=1`;
+        const simpleUrl = `${window.location.protocol}//${window.location.hostname}?mode=customer`;
         console.log('최종 단순 URL 시도:', simpleUrl);
         
         try {
@@ -1612,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // URL 파라미터 확인하여 고객용/관리자용 모드 결정
     const urlParams = new URLSearchParams(window.location.search);
-    const isCustomerMode = urlParams.has('customer') || urlParams.has('apply');
+    const isCustomerMode = urlParams.has('customer') || urlParams.has('apply') || urlParams.get('mode') === 'customer';
     
     // 고객용 모드인 경우 QR 생성 버튼과 카카오톡 공유 버튼, 문자 버튼 숨기고 제출 버튼 텍스트 변경
     if (isCustomerMode) {
@@ -1743,6 +1743,7 @@ window.shareToKakao = function() {
     if (typeof Kakao !== 'undefined' && Kakao.Share) {
         const title = localStorage.getItem('mainTitle') || 'Speed 아파트 통신 환경 개선 신청서';
         const subtitle = localStorage.getItem('mainSubtitle') || '통신 환경 개선을 위한 신청서를 작성해주세요';
+        const customerUrl = `${window.location.origin}${window.location.pathname}?mode=customer`;
         
         Kakao.Share.sendDefault({
             objectType: 'feed',
@@ -1751,16 +1752,16 @@ window.shareToKakao = function() {
                 description: subtitle,
                 imageUrl: 'https://via.placeholder.com/300x200/4CAF50/FFFFFF?text=신청서',
                 link: {
-                    mobileWebUrl: window.location.href,
-                    webUrl: window.location.href,
+                    mobileWebUrl: customerUrl,
+                    webUrl: customerUrl,
                 },
             },
             buttons: [
                 {
                     title: '신청서 작성하기',
                     link: {
-                        mobileWebUrl: window.location.href,
-                        webUrl: window.location.href,
+                        mobileWebUrl: customerUrl,
+                        webUrl: customerUrl,
                     },
                 },
             ],
