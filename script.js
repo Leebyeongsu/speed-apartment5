@@ -1630,22 +1630,64 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })();
         
-        const qrBtn = document.getElementById('qrGenerateBtn');
-        const shareBtn = document.querySelector('.share-btn');
-        const smsBtn = document.querySelector('.sms-btn');
-        const submitBtn = document.querySelector('.submit-btn');
-        const qrSection = document.getElementById('qrSection');
-        const adminInputSection = document.getElementById('adminInputSection');
-        const adminActionSection = document.getElementById('adminActionSection');
-        const customerSubmitSection = document.getElementById('customerSubmitSection');
+        // DOM 준비 완료 후 UI 요소들 처리
+        const setupCustomerMode = () => {
+            const qrBtn = document.getElementById('qrGenerateBtn');
+            const shareBtn = document.querySelector('.share-btn');
+            const smsBtn = document.querySelector('.sms-btn');
+            const submitBtn = document.querySelector('.submit-btn');
+            const qrSection = document.getElementById('qrSection');
+            const adminInputSection = document.getElementById('adminInputSection');
+            const adminActionSection = document.getElementById('adminActionSection');
+            const customerSubmitSection = document.getElementById('customerSubmitSection');
+            
+            // 관리자용 요소들 완전히 숨기기 (CSS도 추가)
+            if (adminInputSection) {
+                adminInputSection.style.display = 'none';
+                adminInputSection.style.visibility = 'hidden';
+                adminInputSection.classList.add('customer-mode-hidden');
+            }
+            if (adminActionSection) {
+                adminActionSection.style.display = 'none';
+                adminActionSection.style.visibility = 'hidden';
+                adminActionSection.classList.add('customer-mode-hidden');
+            }
+            if (qrSection) {
+                qrSection.style.display = 'none';
+            }
+            
+            // 고객용 제출 버튼 강제 표시
+            if (customerSubmitSection) {
+                customerSubmitSection.style.display = 'block';
+                customerSubmitSection.style.visibility = 'visible';
+                customerSubmitSection.classList.remove('customer-mode-hidden');
+            }
+            
+            // CSS 규칙 추가로 확실히 숨기기
+            const style = document.createElement('style');
+            style.textContent = `
+                .customer-mode-hidden {
+                    display: none !important;
+                    visibility: hidden !important;
+                }
+                #customerSubmitSection {
+                    display: block !important;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            console.log('고객용 모드 UI 설정 완료');
+        };
         
-        // 관리자용 요소들 숨기기
-        if (adminInputSection) adminInputSection.style.display = 'none';
-        if (adminActionSection) adminActionSection.style.display = 'none';
-        if (qrSection) qrSection.style.display = 'none';
+        // DOM이 준비되었는지 확인 후 실행
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupCustomerMode);
+        } else {
+            setupCustomerMode();
+        }
         
-        // 고객용 제출 버튼 표시
-        if (customerSubmitSection) customerSubmitSection.style.display = 'block';
+        // 추가로 페이지 로드 완료 후에도 한번 더 실행
+        setTimeout(setupCustomerMode, 100);
         
         // 저장된 제목이 있으면 우선 사용, 부제목은 고정
         const headerTitle = document.querySelector('header h1');
