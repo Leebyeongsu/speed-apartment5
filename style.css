@@ -1,0 +1,762 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 10px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.application-form, .result-section {
+    padding: 30px 20px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    font-size: 1rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;  /* iOS에서 자동 확대 방지 */
+        padding: 15px;    /* 터치 영역 확대 */
+        margin-bottom: 8px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    /* 가상 키보드가 표시될 때 페이지 스크롤 개선 */
+    .container {
+        max-height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* 버튼 크기 최적화 */
+    button[type="submit"] {
+        min-height: 44px;  /* 터치 영역 최소 크기 */
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+/* 모달 스타일 */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    margin: 20px;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+.modal h2 {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    margin: 0;
+    padding: 25px 20px;
+    border-radius: 15px 15px 0 0;
+    font-size: 1.4rem;
+}
+
+.email-form {
+    padding: 25px 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.form-group label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.form-actions, .result-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.submit-btn, .share-btn, .new-btn, .qr-btn, .download-btn, .close-btn, .sms-btn {
+    flex: 1;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.share-btn {
+    background: linear-gradient(135deg, #FEE500 0%, #FFCD00 100%);
+    color: #3C1E1E;
+}
+
+.share-btn:hover {
+    background: linear-gradient(135deg, #FFCD00 0%, #FFB300 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 205, 0, 0.3);
+}
+
+.new-btn {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+}
+
+.new-btn:hover {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.sms-btn {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+}
+
+.sms-btn:hover {
+    background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+}
+
+.result-section {
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.result-section h2 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+#resultContent {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#resultContent .result-item {
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+#resultContent .result-item:last-child {
+    border-bottom: none;
+}
+
+#resultContent .result-label {
+    font-weight: 600;
+    color: #555;
+    display: inline-block;
+    min-width: 100px;
+}
+
+#resultContent .result-value {
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px 5px;
+    }
+    
+    .container {
+        border-radius: 10px;
+    }
+    
+    header {
+        padding: 25px 15px;
+    }
+    
+    header h1 {
+        font-size: 1.6rem;
+    }
+    
+    header p {
+        font-size: 1rem;
+    }
+    
+    .application-form, .result-section {
+        padding: 25px 15px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;
+        padding: 14px 12px;
+    }
+    
+    .form-actions, .result-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .submit-btn, .share-btn, .new-btn {
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+    }
+    
+    #resultContent .result-label {
+        display: block;
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .application-form, .result-section {
+        padding: 20px 12px;
+    }
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error-message {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.success-message {
+    color: #4CAF50;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* QR 코드 관련 스타일 */
+.qr-btn {
+    background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+    color: white;
+}
+
+.qr-btn:hover {
+    background: linear-gradient(135deg, #7B1FA2 0%, #4A148C 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
+}
+
+.qr-section {
+    padding: 30px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    border-top: 2px solid #eee;
+}
+
+.qr-section h2 {
+    color: #9C27B0;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+.qr-section p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.qr-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+    display: inline-block;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.qr-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.download-btn {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+}
+
+.download-btn:hover {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.close-btn {
+    background: linear-gradient(135deg, #757575 0%, #616161 100%);
+    color: white;
+}
+
+.close-btn:hover {
+    background: linear-gradient(135deg, #616161 0%, #424242 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(117, 117, 117, 0.3);
+}
+
+/* 메일/폰번호 입력 모달 스타일 */
+.email-input-row, .phone-input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.email-input, .phone-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.email-input:focus, .phone-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.remove-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    min-width: 60px;
+}
+
+.remove-btn:hover {
+    background: #ff3742;
+    transform: scale(1.05);
+}
+
+.add-btn {
+    background: #2ed573;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.add-btn:hover {
+    background: #26d0ce;
+    transform: scale(1.02);
+}
+
+.add-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* QR 코드 삭제 버튼 스타일 */
+#qrDeleteBtn {
+    background: #ff4757;
+    border-color: #ff4757;
+}
+
+#qrDeleteBtn:hover {
+    background: #ff3742;
+    border-color: #ff3742;
+}
+
+/* 메일/폰번호 입력 모달 특별 스타일 */
+#emailInputModal .modal-content,
+#phoneInputModal .modal-content {
+    max-width: 500px;
+}
+
+#emailInputModal .email-form,
+#phoneInputModal .email-form {
+    padding: 20px 0;
+}
+
+#emailInputModal .form-group,
+#phoneInputModal .form-group {
+    margin-bottom: 20px;
+}
+
+#emailInputModal label,
+#phoneInputModal label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    display: block;
+}
+
+/* 제목 편집 관련 스타일 */
+#mainTitle, #mainSubtitle {
+    transition: all 0.3s ease;
+}
+
+#mainTitle:hover, #mainSubtitle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 5px 10px;
+    margin: -5px -10px;
+}
+
+#mainTitle:active, #mainSubtitle:active {
+    transform: scale(0.98);
+}
+
+/* 제목 편집 입력란 스타일 */
+#titleInput, #subtitleInput {
+    font-family: inherit;
+    text-align: center;
+}
+
+#titleInput:focus, #subtitleInput:focus {
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 편집 버튼 스타일 */
+#mainTitle button, #mainSubtitle button {
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#mainTitle button:hover, #mainSubtitle button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 폼 액션 영역 레이아웃 조정 */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* 입력 섹션 (메일/폰번호) */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 액션 섹션 (공유/QR 코드 버튼들) */
+.action-section {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* 입력 그룹 스타일 */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e1e5e9;
+}
+
+/* 입력 표시 스타일 */
+.input-display {
+    display: inline-block;
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #666;
+    min-width: 200px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    min-height: 16px;
+    line-height: 1.2;
+}
+
+.input-display:empty {
+    display: none;
+}
+
+.input-display.has-content {
+    background: #e8f5e8;
+    border-color: #4CAF50;
+    color: #2e7d32;
+    font-weight: 500;
+}
+
+/* 버튼 크기 조정 */
+.email-btn, .sms-btn {
+    width: 140px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 40px;
+    box-sizing: border-box;
+}
+
+/* 메일 입력 버튼 스타일 */
+.email-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.email-btn:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* 폰번호 입력 버튼 스타일 */
+.sms-btn {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.sms-btn:hover {
+    background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+/* 공유 및 QR 코드 버튼 스타일 */
+.share-btn, .qr-btn {
+    min-width: 140px;
+    max-width: 160px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    height: 40px;
+}
+
+/* 고객용 신청서 제출 섹션 */
+.customer-submit-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.customer-submit-section .submit-btn {
+    width: 200px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    margin: 0 auto;
+    display: block;
+}
+
+.customer-submit-section .submit-btn:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
