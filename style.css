@@ -760,3 +760,38 @@ header p {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
+
+/* 전단지 이미지 스타일링 */
+.promotion-flyer {
+    margin: 20px 0;
+    text-align: center;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.flyer-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.flyer-image:hover {
+    transform: scale(1.02);
+}
+
+/* 모바일에서 이미지 최적화 */
+@media (max-width: 480px) {
+    .promotion-flyer {
+        margin: 15px 0;
+        padding: 10px;
+    }
+
+    .flyer-image {
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+}

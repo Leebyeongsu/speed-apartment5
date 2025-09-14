@@ -202,7 +202,14 @@
         <div id="result" class="result-section" style="display: none;">
             <h2>✅ 신청이 완료되었습니다!</h2>
             <div id="resultContent"></div>
-            <div class="result-actions">
+
+            <!-- 조건부 이미지 영역: workType이 KT가 아닌 경우 표시 -->
+            <div id="promotionFlyer" class="promotion-flyer" style="display: none;">
+                <img src="promotion-flyer.jpg" alt="통신 서비스 안내" class="flyer-image">
+            </div>
+
+            <!-- 결과 액션 버튼들: ID 추가 -->
+            <div id="resultActions" class="result-actions">
                 <button type="button" class="share-btn" onclick="shareResultToKakao()">결과 카카오톡 공유</button>
                 <button type="button" class="new-btn" onclick="resetForm()">새 신청서 작성</button>
             </div>
