@@ -104,6 +104,7 @@ window.addEventListener('online', () => {
 let formData = {};
 let currentQRDataURL = null;
 let adminSettings = null; // 관리자 설정 캐시
+let currentApartmentName = 'Speed 아파트'; // 아파트명 캐시 (기본값)
 
 // 안전한 logEmailAttempt 전역 래퍼 (notification-service 모듈이 로드되지 않은 환경 방어)
 if (typeof window !== 'undefined' && typeof window.logEmailAttempt !== 'function') {
@@ -198,7 +199,11 @@ async function loadAdminSettingsFromCloud() {
             if (data.title) localStorage.setItem('mainTitle', data.title);
             if (data.phones) localStorage.setItem('savedPhoneNumbers', JSON.stringify(data.phones));
             if (data.emails) localStorage.setItem('savedEmailAddresses', JSON.stringify(data.emails));
-            
+
+            // 아파트명 캐시 업데이트
+            currentApartmentName = data.apartment_name || 'Speed 아파트';
+            console.log('현재 아파트명:', currentApartmentName);
+
             adminSettings = data;
             console.log('Supabase에서 관리자 설정을 로드했습니다.');
         } else {
@@ -222,9 +227,13 @@ function loadAdminSettingsLocal() {
             apartment_id: APARTMENT_ID,
             title: localStorage.getItem('mainTitle') || '',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
-            emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]')
+            emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
+            apartment_name: 'Speed 아파트' // 로컬 백업 시 기본값
         };
-        
+
+        // 아파트명 캐시 업데이트
+        currentApartmentName = settings.apartment_name;
+
         adminSettings = settings;
         console.log('로컬에서 관리자 설정을 로드했습니다.');
         
@@ -607,7 +616,7 @@ async function sendEmailToAdmins(applicationData) {
 
                 const templateParams = {
                     to_email: adminEmail,
-                    apartment_name: 'Speed 아파트',
+                    apartment_name: currentApartmentName || 'Speed 아파트',
                     application_number: emailAppNumber,
                     name: applicationData.name,
                     phone: applicationData.phone,
@@ -802,7 +811,7 @@ async function sendNotificationsViaEdgeFunction(applicationData) {
                     'template_pxi385c',
                     {
                         to_email: email,
-                        apartment_name: 'Speed 아파트',
+                        apartment_name: currentApartmentName || 'Speed 아파트',
                         application_number: emailAppNum,
                         name: applicationData.name,
                         phone: applicationData.phone,
@@ -824,7 +833,7 @@ async function sendNotificationsViaEdgeFunction(applicationData) {
                 console.error(`❌ ${email}로 EmailJS 개별 발송 실패:`, error);
                 console.error('📋 실패한 이메일 파라미터:', {
                     to_email: email,
-                    apartment_name: 'Speed 아파트',
+                    apartment_name: currentApartmentName || 'Speed 아파트',
                     application_number: emailAppNum,
                     name: applicationData.name,
                     phone: applicationData.phone,
