@@ -1,7 +1,8 @@
 // Supabase 설정은 supabase-config.js에서 전역 변수로 제공됨
 
-// 아파트 ID 설정 (고유 식별자) - speed_apartment2로 변경
-const APARTMENT_ID = 'speed_apartment2';
+// 아파트 ID 설정 (고유 식별자) - 배포할 리포지토리/프로젝트에 맞게 변경
+// 변경: speed_apartment5 (원격 리포지토리 및 Supabase 설정과 일치)
+const APARTMENT_ID = 'speed_apartment5';
 
 // 카카오 SDK 초기화 (실제 앱키로 변경 필요)
 try {
