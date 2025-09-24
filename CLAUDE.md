@@ -13,6 +13,8 @@
 2. **자바스크립트 코어** (`script.js`) - 폼 처리, API 통합, UI 상호작용
 3. **Supabase 통합** (`supabase-config.js`) - 데이터베이스 클라이언트 설정 및 연결 관리
 4. **스타일링** (`style.css`) - 그라디언트 디자인과 애니메이션을 포함한 현대적 반응형 CSS
+5. **이미지 자산** - 프로모션 및 UI 이미지 파일들
+6. **문서화** - 기능 업데이트 및 수정 사항 기록
 
 **주요 기능:**
 - **폼 관리** - 아파트 통신 환경 개선 신청서 제출
@@ -80,7 +82,7 @@ npx serve .
 ### 설정
 - **Supabase URL**: `https://boorsqnfkwglzvnhtwcx.supabase.co`
 - **EmailJS 사용자 ID**: `8-CeAZsTwQwNl4yE2`
-- **아파트 ID**: `speed_apartment2` (script.js:4에서 설정 가능)
+- **아파트 ID**: `speed_apartment5` (script.js:5에서 설정 가능)
 
 ### 테스트 모드
 ```
@@ -93,6 +95,22 @@ http://localhost:8000/?mode=customer
 # 모바일 개발자 도구 포함 디버그 모드
 http://localhost:8000/?debug=true
 http://localhost:8000/#eruda
+```
+
+### 파일 구조
+```
+speed-apartment-이은화/
+├── index.html              # 메인 웹 애플리케이션
+├── script.js               # 핵심 JavaScript 로직 (78KB)
+├── style.css               # 반응형 CSS 스타일
+├── supabase-config.js      # Supabase 클라이언트 설정
+├── CLAUDE.md               # 프로젝트 문서화
+├── apartment_ehwa.jpg      # 아파트 이미지 (222KB)
+├── promotion-flyer.jpg     # 프로모션 전단 이미지 (195KB)
+├── char.jpg                # 캐릭터 이미지 (195KB)
+├── apartment_name_수정.md  # 아파트명 수정 기록
+├── 이미지추가.md           # 이미지 추가 기록
+└── 다중_이미지추가.md      # 다중 이미지 추가 기록
 ```
 
 ## 🎯 핵심 기술 개념
@@ -132,7 +150,7 @@ http://localhost:8000/#eruda
 ## ⚙️ 설정 관리
 
 ### 핵심 설정 (`script.js`)
-- **APARTMENT_ID**: `'speed_apartment2'` - 이 아파트 단지의 고유 식별자
+- **APARTMENT_ID**: `'speed_apartment5'` - 이 아파트 단지의 고유 식별자
 - **EmailJS 통합**: 재시도 로직을 포함한 자동 초기화
 - **Supabase 연결**: 다중 방법 클라이언트 초기화
 - **카카오 SDK**: 선택적 소셜 공유 통합

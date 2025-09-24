@@ -147,7 +147,7 @@ async function saveAdminSettingsToCloud() {
         }
 
         const settings = {
-            apartment_id: APARTMENT_ID,  // speed_apartment2 사용
+            apartment_id: APARTMENT_ID,  // speed_apartment5 사용
             title: localStorage.getItem('mainTitle') || '',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
             emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
@@ -186,7 +186,7 @@ async function loadAdminSettingsFromCloud() {
         const { data, error } = await supabase
             .from('admin_settings')
             .select('*')
-            .eq('apartment_id', APARTMENT_ID)  // speed_apartment2 조건으로 검색
+            .eq('apartment_id', APARTMENT_ID)  // speed_apartment5 조건으로 검색
             .single();
         
         if (error && error.code !== 'PGRST116') { // 데이터가 없는 경우가 아닌 실제 오류
@@ -782,7 +782,7 @@ async function sendNotificationsViaEdgeFunction(applicationData) {
         const { data: adminCheck, error: adminError } = await supabase
             .from('admin_settings')
             .select('emails')
-            .eq('apartment_id', APARTMENT_ID)  // speed_apartment2로 검색
+            .eq('apartment_id', APARTMENT_ID)  // speed_apartment5로 검색
             .single();
 
         if (adminError || !adminCheck?.emails || adminCheck.emails.length === 0) {
