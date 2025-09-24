@@ -364,11 +364,11 @@ async function saveApplicationToSupabase(applicationData) {
             return await saveApplicationLocally(applicationData);
         }
 
-        // 신청번호 생성 (현재 날짜 + 랜덤 4자리)
-        const today = new Date();
-        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
-        const randomNum = Math.floor(1000 + Math.random() * 9000);
-        const applicationNumber = `APP-${dateStr}-${randomNum}`;
+    // 신청번호 생성 (현재 날짜 + 랜덤 4자리)
+    const today = new Date();
+    const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const applicationNumber = `APP-${dateStr}-${randomNum}`;
 
         // 통신사 이름 변환
         const providerNames = {
@@ -378,28 +378,42 @@ async function saveApplicationToSupabase(applicationData) {
             'electrical': '기타(지역방송)'
         };
 
-        // 안전한 방식: 확실한 필드만 먼저 저장
-        const applicationRecord = {
-            name: applicationData.name, // 동/호수 정보
-            phone: applicationData.phone // 연락처
-        };
+        // 안전한 방식: 클라이언트 필드명을 DB 컬럼명으로 매핑하는 헬퍼 사용
+        function mapToDbRecord(app) {
+            // 최소 매핑 규칙: camelCase -> snake_case와 일부 이름 일치 처리
+            const map = {
+                name: 'name',
+                phone: 'phone',
+                address: 'address',
+                workType: 'work_type',
+                work_type_display: 'work_type_display',
+                budget: 'budget',
+                budget_display: 'budget_display',
+                startDate: 'start_date',
+                description: 'description',
+                submittedAt: 'submitted_at',
+                submitted_at: 'submitted_at',
+                application_number: 'application_number',
+                privacy: 'privacy'
+            };
 
-        // 선택적 컬럼들을 하나씩 안전하게 추가
-        if (applicationData.workType) {
-            applicationRecord.workType = applicationData.workType;
+            const out = {};
+            Object.keys(app).forEach(k => {
+                const dbKey = map[k] || k.replace(/([A-Z])/g, '_$1').toLowerCase();
+                out[dbKey] = app[k];
+            });
+
+            // 보장된 필드
+            if (!out.application_number) out.application_number = applicationNumber;
+            if (!out.submitted_at && app.submittedAt) out.submitted_at = app.submittedAt;
+
+            return out;
         }
-        if (applicationData.startDate) {
-            applicationRecord.startDate = applicationData.startDate;
-        }
-        if (applicationData.description) {
-            applicationRecord.description = applicationData.description;
-        }
-        
-        // privacy는 마지막에 추가 (개인정보 동의 체크 시에만 제출 가능)
+
+        const applicationRecord = mapToDbRecord(applicationData);
+
+        // privacy는 항상 true로 표시
         applicationRecord.privacy = true;
-        
-        // submitted_at 컬럼이 없으므로 제거
-        // 대신 created_at이나 timestamp 컬럼이 있다면 사용
 
         console.log('🔍 Supabase에 신청서 저장 시도 - 상세 정보:', {
             timestamp: new Date().toISOString(),
