@@ -147,6 +147,7 @@ async function saveAdminSettingsToCloud() {
         }
 
         const settings = {
+            id: APARTMENT_ID,  // id도 speed_apartment5로 설정
             apartment_id: APARTMENT_ID,  // speed_apartment5 사용
             title: localStorage.getItem('mainTitle') || '',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
@@ -157,8 +158,8 @@ async function saveAdminSettingsToCloud() {
         // upsert를 사용하여 존재하면 업데이트, 없으면 삽입
         const { data, error } = await supabase
             .from('admin_settings')
-            .upsert(settings, { 
-                onConflict: 'apartment_id',
+            .upsert(settings, {
+                onConflict: 'id',  // id 컬럼 기준으로 충돌 해결
                 returning: 'minimal'
             });
         

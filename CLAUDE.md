@@ -28,9 +28,9 @@
 ### 데이터베이스 스키마 (Supabase)
 
 ```sql
--- 관리자 설정 테이블
+-- 관리자 설정 테이블 (id를 TEXT로 변경하여 apartment_id와 동일하게 설정)
 CREATE TABLE admin_settings (
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,  -- speed_apartment5 같은 문자열 ID
     apartment_id TEXT UNIQUE NOT NULL,
     title TEXT,
     subtitle TEXT,
