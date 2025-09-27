@@ -19,6 +19,26 @@
             <p id="mainSubtitle" style="cursor: default; user-select: none;">신청서를 작성하여 제출해 주세요</p>
         </header>
 
+        <!-- 관리자 모드 전용: 좌측 상단 추가 정보 입력 버튼들 -->
+        <div id="adminTopSection" class="admin-top-section admin-only" style="display: none;">
+            <div class="admin-info-buttons">
+                <div>
+                    <button type="button" class="info-btn" onclick="showApartmentNameModal()">🏢 아파트 이름</button>
+                    <span id="apartmentNameDisplay" class="info-display"></span>
+                </div>
+
+                <div>
+                    <button type="button" class="info-btn" onclick="showEntryIssueModal()">🎨 진입 테마</button>
+                    <span id="entryIssueDisplay" class="info-display"></span>
+                </div>
+
+                <div>
+                    <button type="button" class="info-btn" onclick="showAgencyNameModal()">👥 영업KC 이름</button>
+                    <span id="agencyNameDisplay" class="info-display"></span>
+                </div>
+            </div>
+        </div>
+
         <form id="applicationForm" class="application-form">
             <div class="form-group">
                 <label for="name">공사요청 :  동 / 호수 *</label>
@@ -194,6 +214,60 @@
                     <div class="form-actions">
                         <button type="button" class="submit-btn" onclick="sendSMS()">문자 보내기</button>
                         <button type="button" class="close-btn" onclick="closeSMSModal()">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 아파트 이름 입력 모달 (관리자 전용) -->
+        <div id="apartmentNameModal" class="modal admin-only" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeApartmentNameModal()">×</span>
+                <h2>🏢 아파트 이름 설정</h2>
+                <div class="email-form">
+                    <div class="form-group">
+                        <label for="apartmentNameInput">아파트 이름</label>
+                        <input type="text" id="apartmentNameInput" placeholder="예: Speed 아파트">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="submit-btn" onclick="saveApartmentName()">저장</button>
+                        <button type="button" class="close-btn" onclick="closeApartmentNameModal()">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 진입 테마 입력 모달 (관리자 전용) -->
+        <div id="entryIssueModal" class="modal admin-only" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeEntryIssueModal()">×</span>
+                <h2>🎨 진입 테마 설정</h2>
+                <div class="email-form">
+                    <div class="form-group">
+                        <label for="entryIssueInput">진입 테마</label>
+                        <textarea id="entryIssueInput" rows="3" placeholder="예: 고급스러운 현대적 디자인"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="submit-btn" onclick="saveEntryIssue()">저장</button>
+                        <button type="button" class="close-btn" onclick="closeEntryIssueModal()">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 영업KC 이름 입력 모달 (관리자 전용) -->
+        <div id="agencyNameModal" class="modal admin-only" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeAgencyNameModal()">×</span>
+                <h2>👥 영업KC 이름 설정</h2>
+                <div class="email-form">
+                    <div class="form-group">
+                        <label for="agencyNameInput">영업KC 이름</label>
+                        <input type="text" id="agencyNameInput" placeholder="예: 서울강남KC">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="submit-btn" onclick="saveAgencyName()">저장</button>
+                        <button type="button" class="close-btn" onclick="closeAgencyNameModal()">취소</button>
                     </div>
                 </div>
             </div>

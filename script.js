@@ -152,6 +152,9 @@ async function saveAdminSettingsToCloud() {
             title: localStorage.getItem('mainTitle') || '',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
             emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
+            apartment_name: localStorage.getItem('apartmentName') || '',
+            entry_issue: localStorage.getItem('entryIssue') || '',
+            agency_name: localStorage.getItem('agencyName') || '',
             updated_at: new Date().toISOString()
         };
 
@@ -184,6 +187,9 @@ async function saveAdminSettingsToCloud() {
                     title: settings.title,
                     phones: settings.phones,
                     emails: settings.emails,
+                    apartment_name: settings.apartment_name,
+                    entry_issue: settings.entry_issue,
+                    agency_name: settings.agency_name,
                     updated_at: settings.updated_at
                 })
                 .eq('apartment_id', APARTMENT_ID);
@@ -1769,12 +1775,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const adminSelectors = [
                 '#adminInputSection',
                 '#adminActionSection',
+                '#adminTopSection',
+                '.admin-top-section',
+                '.admin-info-buttons',
                 '.input-section',
                 '.action-section',
                 '.email-btn',
                 '.sms-btn',
                 '.share-btn',
                 '.qr-btn',
+                '.info-btn',
                 '#qrGenerateBtn',
                 '#qrDeleteBtn',
                 '#qrSection'
@@ -1813,12 +1823,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 .customer-mode-hidden,
                 #adminInputSection,
                 #adminActionSection,
+                #adminTopSection,
+                .admin-top-section,
+                .admin-info-buttons,
                 .input-section,
                 .action-section,
                 .email-btn,
                 .sms-btn,
                 .share-btn,
                 .qr-btn,
+                .info-btn,
                 #qrGenerateBtn,
                 #qrDeleteBtn,
                 #qrSection {
@@ -1866,7 +1880,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // 관리자용 모드일 때 고객용 제출 버튼 숨기기
         const customerSubmitSection = document.getElementById('customerSubmitSection');
         if (customerSubmitSection) customerSubmitSection.style.display = 'none';
-        
+
+        // 관리자 전용 3개 버튼 섹션 표시
+        const adminTopSection = document.getElementById('adminTopSection');
+        if (adminTopSection) {
+            adminTopSection.style.display = 'block';
+        }
+
+        // 관리자 정보 표시 초기화
+        setTimeout(() => {
+            initializeAdminInfoDisplay();
+        }, 100);
+
         console.log('관리자용 모드로 실행됨');
     }
     
@@ -1980,3 +2005,194 @@ window.shareToKakao = function() {
         alert('카카오톡 공유 기능을 사용할 수 없습니다.');
     }
 };
+
+// 관리자 전용 3개 입력 버튼 함수들
+
+// 아파트 이름 관련 함수들
+function showApartmentNameModal() {
+    const modal = document.getElementById('apartmentNameModal');
+    const input = document.getElementById('apartmentNameInput');
+
+    // 현재 저장된 값 불러오기
+    const savedValue = localStorage.getItem('apartmentName') || '';
+    input.value = savedValue;
+
+    modal.style.display = 'block';
+    input.focus();
+}
+
+function closeApartmentNameModal() {
+    const modal = document.getElementById('apartmentNameModal');
+    modal.style.display = 'none';
+}
+
+function saveApartmentName() {
+    const input = document.getElementById('apartmentNameInput');
+    const value = input.value.trim();
+
+    if (!value) {
+        alert('아파트 이름을 입력해주세요.');
+        return;
+    }
+
+    // localStorage에 저장
+    localStorage.setItem('apartmentName', value);
+
+    // 화면 표시 업데이트
+    updateApartmentNameDisplay();
+
+    // Supabase에 저장
+    saveAdminSettingsToCloud();
+
+    // 모달 닫기
+    closeApartmentNameModal();
+
+    alert('아파트 이름이 저장되었습니다!');
+}
+
+function updateApartmentNameDisplay() {
+    const display = document.getElementById('apartmentNameDisplay');
+    const savedValue = localStorage.getItem('apartmentName') || '';
+
+    if (savedValue) {
+        display.textContent = savedValue;
+        display.classList.add('has-content');
+        display.title = `저장된 아파트 이름: ${savedValue}`;
+    } else {
+        display.textContent = '';
+        display.classList.remove('has-content');
+        display.title = '';
+    }
+}
+
+// 진입 테마 관련 함수들
+function showEntryIssueModal() {
+    const modal = document.getElementById('entryIssueModal');
+    const input = document.getElementById('entryIssueInput');
+
+    // 현재 저장된 값 불러오기
+    const savedValue = localStorage.getItem('entryIssue') || '';
+    input.value = savedValue;
+
+    modal.style.display = 'block';
+    input.focus();
+}
+
+function closeEntryIssueModal() {
+    const modal = document.getElementById('entryIssueModal');
+    modal.style.display = 'none';
+}
+
+function saveEntryIssue() {
+    const input = document.getElementById('entryIssueInput');
+    const value = input.value.trim();
+
+    if (!value) {
+        alert('진입 테마를 입력해주세요.');
+        return;
+    }
+
+    // localStorage에 저장
+    localStorage.setItem('entryIssue', value);
+
+    // 화면 표시 업데이트
+    updateEntryIssueDisplay();
+
+    // Supabase에 저장
+    saveAdminSettingsToCloud();
+
+    // 모달 닫기
+    closeEntryIssueModal();
+
+    alert('진입 테마가 저장되었습니다!');
+}
+
+function updateEntryIssueDisplay() {
+    const display = document.getElementById('entryIssueDisplay');
+    const savedValue = localStorage.getItem('entryIssue') || '';
+
+    if (savedValue) {
+        display.textContent = savedValue.length > 20 ? savedValue.substring(0, 20) + '...' : savedValue;
+        display.classList.add('has-content');
+        display.title = `저장된 진입 테마: ${savedValue}`;
+    } else {
+        display.textContent = '';
+        display.classList.remove('has-content');
+        display.title = '';
+    }
+}
+
+// 영업KC 이름 관련 함수들
+function showAgencyNameModal() {
+    const modal = document.getElementById('agencyNameModal');
+    const input = document.getElementById('agencyNameInput');
+
+    // 현재 저장된 값 불러오기
+    const savedValue = localStorage.getItem('agencyName') || '';
+    input.value = savedValue;
+
+    modal.style.display = 'block';
+    input.focus();
+}
+
+function closeAgencyNameModal() {
+    const modal = document.getElementById('agencyNameModal');
+    modal.style.display = 'none';
+}
+
+function saveAgencyName() {
+    const input = document.getElementById('agencyNameInput');
+    const value = input.value.trim();
+
+    if (!value) {
+        alert('영업KC 이름을 입력해주세요.');
+        return;
+    }
+
+    // localStorage에 저장
+    localStorage.setItem('agencyName', value);
+
+    // 화면 표시 업데이트
+    updateAgencyNameDisplay();
+
+    // Supabase에 저장
+    saveAdminSettingsToCloud();
+
+    // 모달 닫기
+    closeAgencyNameModal();
+
+    alert('영업KC 이름이 저장되었습니다!');
+}
+
+function updateAgencyNameDisplay() {
+    const display = document.getElementById('agencyNameDisplay');
+    const savedValue = localStorage.getItem('agencyName') || '';
+
+    if (savedValue) {
+        display.textContent = savedValue;
+        display.classList.add('has-content');
+        display.title = `저장된 영업KC 이름: ${savedValue}`;
+    } else {
+        display.textContent = '';
+        display.classList.remove('has-content');
+        display.title = '';
+    }
+}
+
+// 관리자 정보 표시 초기화 함수
+function initializeAdminInfoDisplay() {
+    updateApartmentNameDisplay();
+    updateEntryIssueDisplay();
+    updateAgencyNameDisplay();
+}
+
+// 전역 함수로 노출
+window.showApartmentNameModal = showApartmentNameModal;
+window.closeApartmentNameModal = closeApartmentNameModal;
+window.saveApartmentName = saveApartmentName;
+window.showEntryIssueModal = showEntryIssueModal;
+window.closeEntryIssueModal = closeEntryIssueModal;
+window.saveEntryIssue = saveEntryIssue;
+window.showAgencyNameModal = showAgencyNameModal;
+window.closeAgencyNameModal = closeAgencyNameModal;
+window.saveAgencyName = saveAgencyName;
