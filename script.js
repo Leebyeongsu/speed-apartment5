@@ -153,7 +153,6 @@ async function saveAdminSettingsToCloud() {
             subtitle: '빠르고 정확한 통신 환경 개선을 위한 신청서',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
             emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
-            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
 
