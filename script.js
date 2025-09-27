@@ -1763,50 +1763,84 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // DOM 준비 완료 후 UI 요소들 처리
         const setupCustomerMode = () => {
-            const qrBtn = document.getElementById('qrGenerateBtn');
-            const shareBtn = document.querySelector('.share-btn');
-            const smsBtn = document.querySelector('.sms-btn');
-            const submitBtn = document.querySelector('.submit-btn');
-            const qrSection = document.getElementById('qrSection');
-            const adminInputSection = document.getElementById('adminInputSection');
-            const adminActionSection = document.getElementById('adminActionSection');
-            const customerSubmitSection = document.getElementById('customerSubmitSection');
-            
-            // 관리자용 요소들 완전히 숨기기 (CSS도 추가)
-            if (adminInputSection) {
-                adminInputSection.style.display = 'none';
-                adminInputSection.style.visibility = 'hidden';
-                adminInputSection.classList.add('customer-mode-hidden');
-            }
-            if (adminActionSection) {
-                adminActionSection.style.display = 'none';
-                adminActionSection.style.visibility = 'hidden';
-                adminActionSection.classList.add('customer-mode-hidden');
-            }
-            if (qrSection) {
-                qrSection.style.display = 'none';
-            }
-            
+            console.log('고객 모드 설정 시작');
+
+            // 관리자 버튼들을 더 적극적으로 찾아서 숨기기
+            const adminSelectors = [
+                '#adminInputSection',
+                '#adminActionSection',
+                '.input-section',
+                '.action-section',
+                '.email-btn',
+                '.sms-btn',
+                '.share-btn',
+                '.qr-btn',
+                '#qrGenerateBtn',
+                '#qrDeleteBtn',
+                '#qrSection'
+            ];
+
+            adminSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    if (element) {
+                        element.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important;';
+                        element.classList.add('customer-mode-hidden');
+                        console.log('숨김 처리:', selector, element);
+                    }
+                });
+            });
+
             // 고객용 제출 버튼 강제 표시
+            const customerSubmitSection = document.getElementById('customerSubmitSection');
             if (customerSubmitSection) {
-                customerSubmitSection.style.display = 'block';
-                customerSubmitSection.style.visibility = 'visible';
+                customerSubmitSection.style.cssText = 'display: block !important; visibility: visible !important;';
                 customerSubmitSection.classList.remove('customer-mode-hidden');
+                console.log('고객 제출 버튼 표시됨');
             }
-            
-            // CSS 규칙 추가로 확실히 숨기기
+
+            // 제목 클릭 편집 기능 비활성화
+            const titleElement = document.getElementById('mainTitle');
+            if (titleElement) {
+                titleElement.onclick = null;
+                titleElement.style.cursor = 'default';
+                titleElement.removeAttribute('title');
+            }
+
+            // 강력한 CSS 규칙 추가
             const style = document.createElement('style');
             style.textContent = `
-                .customer-mode-hidden {
+                .customer-mode-hidden,
+                #adminInputSection,
+                #adminActionSection,
+                .input-section,
+                .action-section,
+                .email-btn,
+                .sms-btn,
+                .share-btn,
+                .qr-btn,
+                #qrGenerateBtn,
+                #qrDeleteBtn,
+                #qrSection {
                     display: none !important;
                     visibility: hidden !important;
+                    opacity: 0 !important;
+                    height: 0 !important;
+                    overflow: hidden !important;
                 }
                 #customerSubmitSection {
                     display: block !important;
+                    visibility: visible !important;
+                }
+                body.customer-mode .form-actions > *:not(#customerSubmitSection) {
+                    display: none !important;
                 }
             `;
             document.head.appendChild(style);
-            
+
+            // body에 customer-mode 클래스 추가
+            document.body.classList.add('customer-mode');
+
             console.log('고객용 모드 UI 설정 완료');
         };
         
