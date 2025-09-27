@@ -150,25 +150,58 @@ async function saveAdminSettingsToCloud() {
             id: APARTMENT_ID,  // id도 speed_apartment5로 설정
             apartment_id: APARTMENT_ID,  // speed_apartment5 사용
             title: localStorage.getItem('mainTitle') || '',
+            subtitle: '빠르고 정확한 통신 환경 개선을 위한 신청서',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
             emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
+            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
-        
-        // upsert를 사용하여 존재하면 업데이트, 없으면 삽입
-        const { data, error } = await supabase
+
+        // 현재 apartment_id로 기존 데이터 확인
+        const { data: existingData, error: checkError } = await supabase
             .from('admin_settings')
-            .upsert(settings, {
-                onConflict: 'id',  // id 컬럼 기준으로 충돌 해결
-                returning: 'minimal'
-            });
-        
-        if (error) {
-            console.error('Supabase 저장 오류:', error);
+            .select('*')
+            .eq('apartment_id', APARTMENT_ID)
+            .single();
+
+        if (checkError && checkError.code === 'PGRST116') {
+            // 데이터가 없으면 새로 삽입
+            console.log('🆕 speed_apartment5 데이터 새로 생성 중...');
+            const { data, error } = await supabase
+                .from('admin_settings')
+                .insert(settings);
+
+            if (error) {
+                console.error('❌ speed_apartment5 데이터 생성 실패:', error);
+                return;
+            }
+
+            console.log('✅ speed_apartment5 데이터가 성공적으로 생성되었습니다!', settings);
+        } else if (!checkError) {
+            // 데이터가 이미 있으면 업데이트
+            console.log('🔄 기존 speed_apartment5 데이터 업데이트 중...');
+            const { data, error } = await supabase
+                .from('admin_settings')
+                .update({
+                    title: settings.title,
+                    subtitle: settings.subtitle,
+                    phones: settings.phones,
+                    emails: settings.emails,
+                    updated_at: settings.updated_at
+                })
+                .eq('apartment_id', APARTMENT_ID);
+
+            if (error) {
+                console.error('❌ speed_apartment5 데이터 업데이트 실패:', error);
+                return;
+            }
+
+            console.log('✅ speed_apartment5 데이터가 성공적으로 업데이트되었습니다!', settings);
+        } else {
+            console.error('❌ 데이터 확인 중 오류:', checkError);
             return;
         }
-        
-        console.log('관리자 설정이 Supabase에 저장되었습니다.', settings);
+
         adminSettings = settings;
     } catch (error) {
         console.error('관리자 설정 저장 중 오류:', error);
