@@ -150,7 +150,6 @@ async function saveAdminSettingsToCloud() {
             id: APARTMENT_ID,  // id도 speed_apartment5로 설정
             apartment_id: APARTMENT_ID,  // speed_apartment5 사용
             title: localStorage.getItem('mainTitle') || '',
-            subtitle: '빠르고 정확한 통신 환경 개선을 위한 신청서',
             phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
             emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
             updated_at: new Date().toISOString()
@@ -183,7 +182,6 @@ async function saveAdminSettingsToCloud() {
                 .from('admin_settings')
                 .update({
                     title: settings.title,
-                    subtitle: settings.subtitle,
                     phones: settings.phones,
                     emails: settings.emails,
                     updated_at: settings.updated_at
