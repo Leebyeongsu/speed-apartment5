@@ -33,9 +33,11 @@ CREATE TABLE admin_settings (
     id TEXT PRIMARY KEY,  -- speed_apartment5 같은 문자열 ID
     apartment_id TEXT UNIQUE NOT NULL,
     title TEXT,
-    subtitle TEXT,
     phones TEXT[],
     emails TEXT[],
+    apartment_name TEXT,  -- 아파트 이름 (관리자 전용 입력)
+    entry_issue TEXT,     -- 진입 테마 (관리자 전용 입력)
+    agency_name TEXT,     -- 영업KC 이름 (관리자 전용 입력)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -67,6 +69,121 @@ CREATE TABLE notification_logs (
     sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
+
+## 📊 Supabase 데이터 전달 로직
+
+### APARTMENT_ID 설정 및 사용 흐름
+
+#### 1. 아파트 ID 상수 정의 (script.js:5)
+```javascript
+// 아파트 ID 설정 (고유 식별자) - 배포할 리포지토리/프로젝트에 맞게 변경
+// 변경: speed_apartment5 (원격 리포지토리 및 Supabase 설정과 일치)
+const APARTMENT_ID = 'speed_apartment5';
+```
+
+이 상수는 **모든 Supabase 데이터 작업의 핵심 식별자**로 사용됩니다.
+
+#### 2. 관리자 설정 저장 로직 (script.js:149-159)
+```javascript
+// saveAdminSettingsToCloud() 함수에서 APARTMENT_ID 사용
+const settings = {
+    id: APARTMENT_ID,                    // ⭐ id 필드 = 'speed_apartment5'
+    apartment_id: APARTMENT_ID,          // ⭐ apartment_id 필드 = 'speed_apartment5'
+    title: localStorage.getItem('mainTitle') || '',
+    phones: JSON.parse(localStorage.getItem('savedPhoneNumbers') || '[]'),
+    emails: JSON.parse(localStorage.getItem('savedEmailAddresses') || '[]'),
+    apartment_name: localStorage.getItem('apartmentName') || '',      // 🏢 아파트 이름
+    entry_issue: localStorage.getItem('entryIssue') || '',           // 🎨 진입 테마
+    agency_name: localStorage.getItem('agencyName') || '',           // 👥 영업KC 이름
+    updated_at: new Date().toISOString()
+};
+```
+
+#### 3. 데이터베이스 조회 로직 (script.js:161-163)
+```javascript
+// 기존 데이터 확인 시 APARTMENT_ID로 검색
+const { data: existingData, error: checkError } = await supabase
+    .from('admin_settings')
+    .select('*')
+    .eq('apartment_id', APARTMENT_ID)  // ⭐ WHERE apartment_id = 'speed_apartment5'
+    .single();
+```
+
+#### 4. 데이터 삽입/업데이트 분기 처리
+
+**새 데이터 삽입 (script.js:168-170):**
+```javascript
+if (checkError && checkError.code === 'PGRST116') {
+    // 데이터가 없으면 새로 삽입
+    const { data, error } = await supabase
+        .from('admin_settings')
+        .insert(settings);  // ⭐ settings 객체 전체 삽입 (id='speed_apartment5' 포함)
+}
+```
+
+**기존 데이터 업데이트 (script.js:184-195):**
+```javascript
+else if (!checkError) {
+    // 데이터가 이미 있으면 업데이트
+    const { data, error } = await supabase
+        .from('admin_settings')
+        .update({
+            title: settings.title,
+            phones: settings.phones,
+            emails: settings.emails,
+            apartment_name: settings.apartment_name,    // 🏢
+            entry_issue: settings.entry_issue,          // 🎨
+            agency_name: settings.agency_name,          // 👥
+            updated_at: settings.updated_at
+        })
+        .eq('apartment_id', APARTMENT_ID);  // ⭐ WHERE apartment_id = 'speed_apartment5'
+}
+```
+
+#### 5. 데이터 로드 로직 (script.js:217-221)
+```javascript
+// loadAdminSettingsFromCloud() 함수에서 APARTMENT_ID로 조회
+const { data, error } = await supabase
+    .from('admin_settings')
+    .select('*')
+    .eq('apartment_id', APARTMENT_ID)  // ⭐ WHERE apartment_id = 'speed_apartment5'
+    .single();
+```
+
+#### 6. 이메일 발송 시 관리자 확인 (script.js:813-817)
+```javascript
+// 이메일 발송 전 해당 아파트의 관리자 설정 확인
+const { data: adminCheck, error: adminError } = await supabase
+    .from('admin_settings')
+    .select('emails')
+    .eq('apartment_id', APARTMENT_ID)  // ⭐ WHERE apartment_id = 'speed_apartment5'
+    .single();
+```
+
+### 🔄 데이터 흐름 전체 과정
+
+1. **초기화**: `APARTMENT_ID = 'speed_apartment5'` 설정
+2. **관리자 설정 저장**:
+   - localStorage → settings 객체 → Supabase (`id` + `apartment_id` 모두 'speed_apartment5')
+3. **데이터 조회**: `apartment_id = 'speed_apartment5'` 조건으로 검색
+4. **UPSERT 로직**:
+   - 데이터 없음 → INSERT (id와 apartment_id 모두 'speed_apartment5')
+   - 데이터 있음 → UPDATE (apartment_id = 'speed_apartment5' 조건)
+5. **로드**: `apartment_id = 'speed_apartment5'` 조건으로 데이터 가져오기
+6. **이메일**: 해당 아파트의 관리자 설정에서 이메일 목록 조회
+
+### 🎯 핵심 포인트
+
+- **단일 아파트 격리**: `speed_apartment5`는 이 프로젝트만의 고유 네임스페이스
+- **이중 식별자**: `id`와 `apartment_id` 모두 동일한 값으로 설정하여 안전성 확보
+- **일관된 조회**: 모든 데이터 작업에서 `apartment_id` 기준으로 필터링
+- **다중 아파트 지원**: 다른 아파트는 다른 APARTMENT_ID 사용 가능
+
+### 🚨 중요 주의사항
+
+1. **APARTMENT_ID 변경 시**: script.js:5의 상수만 변경하면 됨
+2. **데이터 격리**: 각 아파트는 독립적인 데이터베이스 레코드 보유
+3. **백업 안전성**: apartment_id 기준으로 데이터 백업/복구 가능
 
 ## 🚀 개발 명령어
 
